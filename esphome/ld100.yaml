@@ -1,0 +1,116 @@
+esphome:
+  name: ld100
+
+esp8266:
+  board: esp12e
+
+substitutions:
+  my_name: "ld100"  
+  number_of_leds: "50"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: ".lan"
+
+mqtt:
+  broker: !secret mqtt_broker
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
+ota:
+  safe_mode: True
+  password: !secret ota_password
+
+logger:
+        
+web_server:
+  port: 80
+
+globals:
+  - id: current_effect
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version: ${my_name}"
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal: ${my_name}"
+    update_interval: 30s
+
+binary_sensor:
+  - platform: gpio
+    id: button1
+    name: "${my_name} button1"
+    pin:
+      number: GPIO0
+      inverted: True
+    filters:
+      - delayed_on: 10ms
+    on_press:
+      then:
+        - lambda: |-
+            if (id(current_effect) < 3) {
+              id(current_effect) += 1;
+            }
+            else {
+              id(current_effect) = 0;
+            }
+            if (id(current_effect) == 0) {
+              auto call = id(ws).turn_off();
+              call.perform();
+            }
+            if (id(current_effect) == 1) {
+              auto call = id(ws).turn_on();
+              call.set_effect("Rainbow");
+              call.perform();
+            }
+            if (id(current_effect) == 2) {
+              auto call = id(ws).turn_on();
+              call.set_effect("Twinkle");
+              call.perform();
+            }
+            if (id(current_effect) == 3) {
+              auto call = id(ws).turn_on();
+              call.set_effect("Fireworks");
+              call.perform();
+            }
+
+  - platform: gpio
+    id: button2
+    name: "${my_name} button2"
+    pin:
+      number: GPIO4
+      inverted: True
+    filters:
+      - delayed_on: 10ms
+
+# --- LIGHTS
+light:
+  - platform: neopixelbus
+    id: ws
+    type: GRB
+    variant: WS2812
+    pin: GPIO5
+    num_leds: $number_of_leds
+    name: "${my_name} WS2812"
+    effects:
+      - addressable_rainbow:
+          name: Rainbow
+          speed: 10
+          width: ${number_of_leds}
+      - addressable_twinkle:
+          name: Twinkle
+          twinkle_probability: 15%
+          progress_interval: 4ms          
+      - addressable_fireworks:
+          name: Fireworks
+          update_interval: 32ms
+          spark_probability: 10%
+          use_random_color: true
+          fade_out_rate: 120
+

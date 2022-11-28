@@ -1,0 +1,18 @@
+ESP module: ESP-12E (ESP8266)
+POWER:      Mini USB connector ("Mini USB SMD 5 Pin Female Mini B Socket Connector Plug")
+MOSFETs:    3x AO3400
+OUTPUTs:    - Pin header (GND-SIGNAL-VDD) for WS2816
+            - Pin header (VDD-CH1-CH2-CH3) for RGB LEDs
+Case:       70x45x18mm ("DIY 70x45x18mm Case")
+
+GPIO0  - SWITCH #1
+GPIO4  - WS2818 output
+GPIO5  - SWITCH #2
+GPIO12 - RGB LED channel #1
+GPIO13 - RGB LED channel #2
+GPIO14 - RGB LED channel #3
+
+
+
+Changelog:
+KS-LD100v1-2236 - first revision
